@@ -1,0 +1,211 @@
+import java.util.Scanner;
+
+public class WeatherForecastingSystem {
+
+    private String[] cities;
+    private double[] temperatures;
+    private double[] previousDayTemperatures;
+
+    public WeatherForecastingSystem() {
+        cities = new String[0];
+        temperatures = new double[0];
+        previousDayTemperatures = new double[0];
+    }
+
+    public double convertToFahrenheit(double celsius) {
+        return (celsius * 9 / 5) + 32;
+    }
+
+    public void updateTemperature(String city, double newTemperature) {
+        int index = findCityIndex(city);
+        if (index != -1) {
+            temperatures[index] = newTemperature;
+            System.out.println("Temperature of " + city + " updated to " + newTemperature + "°C.");
+        } else {
+            System.out.println("City not found in the list.");
+        }
+    }
+
+    public void addCity(String city, double temperature) {
+        String[] newCities = new String[cities.length + 1];
+        double[] newTemperatures = new double[temperatures.length + 1];
+        double[] newPreviousDayTemperatures = new double[previousDayTemperatures.length + 1];
+
+        for (int i = 0; i < cities.length; i++) {
+            newCities[i] = cities[i];
+            newTemperatures[i] = temperatures[i];
+            newPreviousDayTemperatures[i] = previousDayTemperatures[i];
+        }
+
+        newCities[cities.length] = city;
+        newTemperatures[temperatures.length] = temperature;
+        newPreviousDayTemperatures[previousDayTemperatures.length] = temperature;
+
+        cities = newCities;
+        temperatures = newTemperatures;
+        previousDayTemperatures = newPreviousDayTemperatures;
+
+        System.out.println("City " + city + " added with temperature " + temperature + "°C.");
+    }
+
+    public void deleteCity(String city) {
+        int index = findCityIndex(city);
+        if (index != -1) {
+            String[] newCities = new String[cities.length - 1];
+            double[] newTemperatures = new double[temperatures.length - 1];
+            double[] newPreviousDayTemperatures = new double[previousDayTemperatures.length - 1];
+
+            for (int i = 0; i < index; i++) {
+                newCities[i] = cities[i];
+                newTemperatures[i] = temperatures[i];
+                newPreviousDayTemperatures[i] = previousDayTemperatures[i];
+            }
+            for (int i = index + 1; i < cities.length; i++) {
+                newCities[i - 1] = cities[i];
+                newTemperatures[i - 1] = temperatures[i];
+                newPreviousDayTemperatures[i - 1] = previousDayTemperatures[i];
+            }
+
+            cities = newCities;
+            temperatures = newTemperatures;
+            previousDayTemperatures = newPreviousDayTemperatures;
+
+            System.out.println("City " + city + " has been deleted.");
+        } else {
+            System.out.println("City not found in the list.");
+        }
+    }
+
+    public void insertCityAtPosition(String city, double temperature, int position) {
+        if (position < 0 || position > cities.length) {
+            System.out.println("Invalid position.");
+            return;
+        }
+
+        String[] newCities = new String[cities.length + 1];
+        double[] newTemperatures = new double[temperatures.length + 1];
+        double[] newPreviousDayTemperatures = new double[previousDayTemperatures.length + 1];
+
+        for (int i = 0; i < position; i++) {
+            newCities[i] = cities[i];
+            newTemperatures[i] = temperatures[i];
+            newPreviousDayTemperatures[i] = previousDayTemperatures[i];
+        }
+
+        newCities[position] = city;
+        newTemperatures[position] = temperature;
+        newPreviousDayTemperatures[position] = temperature;
+
+        for (int i = position; i < cities.length; i++) {
+            newCities[i + 1] = cities[i];
+            newTemperatures[i + 1] = temperatures[i];
+            newPreviousDayTemperatures[i + 1] = previousDayTemperatures[i];
+        }
+
+        cities = newCities;
+        temperatures = newTemperatures;
+        previousDayTemperatures = newPreviousDayTemperatures;
+
+        System.out.println("City " + city + " inserted at position " + position + ".");
+    }
+
+    public void displayPreviousDayRecord(String city) {
+        int index = findCityIndex(city);
+        if (index != -1) {
+            System.out.println("Previous day's temperature for " + city + ": " + previousDayTemperatures[index] + "°C.");
+        } else {
+            System.out.println("City not found in the list.");
+        }
+    }
+
+    public void displayAllCitiesAndTemperatures() {
+        if (cities.length == 0) {
+            System.out.println("No cities are available in the system.");
+        } else {
+            System.out.println("Cities and their temperatures:");
+            for (int i = 0; i < cities.length; i++) {
+                System.out.println(cities[i] + ": " + temperatures[i] + "°C");
+            }
+        }
+    }
+
+    private int findCityIndex(String city) {
+        for (int i = 0; i < cities.length; i++) {
+            if (cities[i].equalsIgnoreCase(city)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        WeatherForecastingSystem system = new WeatherForecastingSystem();
+
+        while (true) {
+            System.out.println("\nWeather Forecasting System");
+            System.out.println("1. Add City");
+            System.out.println("2. Delete City");
+            System.out.println("3. Update Temperature");
+            System.out.println("4. Convert Temperature to Fahrenheit");
+            System.out.println("5. Display Previous Day's Record");
+            System.out.println("6. Insert City at Specific Position");
+            System.out.println("7. Show All Cities and Temperatures");
+            System.out.println("8. Exit"); // New option
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume the newline character
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter city name: ");
+                    String cityToAdd = scanner.nextLine();
+                    System.out.print("Enter temperature (Celsius): ");
+                    double tempToAdd = scanner.nextDouble();
+                    system.addCity(cityToAdd, tempToAdd);
+                    break;
+                case 2:
+                    System.out.print("Enter city name to delete: ");
+                    String cityToDelete = scanner.nextLine();
+                    system.deleteCity(cityToDelete);
+                    break;
+                case 3:
+                    System.out.print("Enter city name to update: ");
+                    String cityToUpdate = scanner.nextLine();
+                    System.out.print("Enter new temperature (Celsius): ");
+                    double newTemp = scanner.nextDouble();
+                    system.updateTemperature(cityToUpdate, newTemp);
+                    break;
+                case 4:
+                    System.out.print("Enter temperature in Celsius to convert: ");
+                    double celsius = scanner.nextDouble();
+                    double fahrenheit = system.convertToFahrenheit(celsius);
+                    System.out.println("Temperature in Fahrenheit: " + fahrenheit);
+                    break;
+                case 5:
+                    System.out.print("Enter city name to get previous day's record: ");
+                    String cityToCheck = scanner.nextLine();
+                    system.displayPreviousDayRecord(cityToCheck);
+                    break;
+                case 6:
+                    System.out.print("Enter city name to insert: ");
+                    String cityToInsert = scanner.nextLine();
+                    System.out.print("Enter temperature (Celsius): ");
+                    double tempToInsert = scanner.nextDouble();
+                    System.out.print("Enter position to insert city at: ");
+                    int position = scanner.nextInt();
+                    system.insertCityAtPosition(cityToInsert, tempToInsert, position);
+                    break;
+                case 8:
+                    System.out.println("Exiting system...");
+                    scanner.close();
+                    return;
+                case 7:
+                    system.displayAllCitiesAndTemperatures(); // Show all cities and temperatures
+                    break;
+                default:
+                    System.out.println("Invalid choice, please try again.");
+            }
+        }
+    }
+}
